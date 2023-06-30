@@ -5,8 +5,13 @@ import java.util.Scanner;
 
 public class Main {
 
+    private Scanner scanner;
+
+    public Main() {
+        scanner = new Scanner(System.in);
+    }
+
     public int mainMenu() {
-        Scanner s = new Scanner (System.in);
         System.out.println("==============================================");
         System.out.println("       █░░░█ █▀▀ █░░ █▀▀ █▀▀█ █▀▄▀█ █▀▀");
         System.out.println("       █▄█▄█ █▀▀ █░░ █░░ █░░█ █░▀░█ █▀▀");
@@ -17,18 +22,18 @@ public class Main {
         System.out.println("[2] Test a Vending Machine");
         System.out.println("[3] Exit");
         System.out.print("Enter selection: ");
-        return Console.readInteger(1, 3);
-    } 
-    
+        return readInteger(1, 3);
+    }
+
     public int displayTestMenu() {
         System.out.println("Choose a feature to test: \n");
         System.out.println("[1] Test Vending Machine Features");
         System.out.println("[2] Perform Vending Machine Maintenance");
         System.out.println("[3] Exit");
         System.out.print("Enter your choice: ");
-        return Console.read.Integer(1, 3);
+        return readInteger(1, 3);
     }
-    
+
     public int displayMaintMenu() {
         System.out.println("[1] Restock Items");
         System.out.println("[2] Add Items");
@@ -38,7 +43,7 @@ public class Main {
         System.out.println("[6] Print Transaction History");
         System.out.println("[7] Exit");
         System.out.println("Enter your selection: ");
-        return Console.readInteger(1, 7);
+        return readInteger(1, 7);
     }
 
     public static void main(String[] args) {
@@ -46,18 +51,18 @@ public class Main {
         m.startProgram();
     }
 
-    public void startProgram(){
-        VendingMachine vendingMachine = null;
+    public void startProgram() {
+        RegularVendingMachine vendingMachine = null;
         while (true) {
             int choice = mainMenu();
 
             switch (choice) {
                 case 1:
-                    vendingMachine = createVM (s);
+                    vendingMachine = createVM();
                     break;
                 case 2:
                     if (vendingMachine != null) {
-                        testVM (s);
+                        testVM(vendingMachine);
                     } else {
                         System.out.println("Error: Vending machine not found.");
                     }
@@ -68,51 +73,50 @@ public class Main {
                 default:
                     System.out.println("Invalid selection! Please try again.");
             }
-        } 
+        }
     }
 
-    public VendingMachine createVM() {
+    public RegularVendingMachine createVM() {
         System.out.println("Choose your Vending Machine option:\n");
         System.out.println("[1] Regular Vending Machine");
         System.out.println("[2] Special Vending Machine");
 
-        int choice = Console.readInteger(1,2);
-        VendingMachine vendingMachine = null;
+        int choice = readInteger(1, 2);
+        RegularVendingMachine vendingMachine = null;
 
         switch (choice) {
             case 1:
                 vendingMachine = createRegVM();
                 break;
             case 2:
-                System.out.println("Oops! you're too excited, this feature isn't available yet.");
+                System.out.println("Oops! You're too excited, this feature isn't available yet.");
                 break;
         }
         return vendingMachine;
     }
 
-    public RegVenMachine createRegVM() {
-        RegVenMachine vendingMachine = new RegularVendingMachine();
-        Scanner scanner = new Scanner(System.in);
+    public RegularVendingMachine createRegVM() {
+        RegularVendingMachine vendingMachine = new RegularVendingMachine();
 
-        int numSlots = readValidInteger(scanner, 8, Integer.MAX_VALUE, "Enter no. of slot items (MIN: 8): ");
+        int numSlots = readValidInteger(8, Integer.MAX_VALUE, "Enter no. of slot items (MIN: 8): ");
 
-        int itemCount = readValidInteger(scanner, 10, Integer.MAX_VALUE, "Enter no. of items (MIN: 10): ");
+        int itemCount = readValidInteger(10, Integer.MAX_VALUE, "Enter no. of items (MIN: 10): ");
 
         for (int i = 0; i < itemCount; i++) {
             System.out.println("===================================");
             System.out.println("Enter details for Item " + (i + 1) + ":");
-            System.out.println("===================================");
-            String itemName = Console.readString("Name of item: ");
-            int price = readValidInteger(scanner, 0, Integer.MAX_VALUE, "Enter a price for the item: ");
-            int calories = readValidInteger(scanner, 0, Integer.MAX_VALUE, "Enter no. of calories of the item: ");
+            System.out.println("===================================");            
+            String itemName = readString("Name of item: ");
+            double price = readValidInteger(0, Integer.MAX_VALUE, "Enter a price for the item: ");
+            int calories = readValidInteger(0, Integer.MAX_VALUE, "Enter no. of calories of the item: ");
 
-            Item item = new Item(itemName, price, calories);
+            Item item = new Item();
             vendingMachine.addItem(String.valueOf(i + 1), item);
 
             System.out.println("Item " + (i + 1) + ":");
             System.out.println("Name: " + item.getItemName());
-            System.out.println("Price: " + item.getPrice());
-            System.out.println("Calories: " + item.getCalories());
+            System.out.println("Price: " + item.getItemPrice());
+            System.out.println("Calories: " + item.getItemCalories());
         }
 
         System.out.println("Your Regular Vending Machine is created successfully!");
@@ -120,7 +124,24 @@ public class Main {
         return vendingMachine;
     }
 
-    public int readValidInteger(Scanner scanner, int min, int max, String message) {
+    public int readInteger(int min, int max) {
+        int value;
+        while (true) {
+            try {
+                value = Integer.parseInt(scanner.nextLine());
+                if (value >= min && value <= max) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+        return value;
+    }
+
+    public int readValidInteger(int min, int max, String message) {
         int value;
         while (true) {
             System.out.print(message);
@@ -138,10 +159,15 @@ public class Main {
         return value;
     }
 
-    public void testVM (VendingMachine vm) {
+    public String readString(String message) {
+        System.out.print(message);
+        return scanner.nextLine();
+    }
+
+    public void testVM(RegularVendingMachine vm) {
         while (true) {
             int choice = displayTestMenu();
-            switch(choice) {
+            switch (choice) {
                 case 1:
                     vm.venMachineFeatures();
                     break;
@@ -156,12 +182,12 @@ public class Main {
         }
     }
 
-    public void checkMaintenance(VendingMachine vm) {
+    public void checkMaintenance(RegularVendingMachine vm) {
         while (true) {
             int choice = displayMaintMenu();
-            switch(choice){
+            switch (choice) {
                 case 1:
-                    vm.restockVen();
+                    vm.restockItem();
                     break;
                 case 2:
                     vm.addVenItem();
@@ -182,7 +208,7 @@ public class Main {
                     return;
                 default:
                     System.out.println("Invalid Selection! Please try again.");
-                }
             }
         }
     }
+}

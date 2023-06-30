@@ -1,9 +1,9 @@
 import java.util.Map;
 
 public class Maintenance {
-    private VendingMachine vendingMachine;
+    private RegularVendingMachine vendingMachine;
 
-    public Maintenance(VendingMachine vendingMachine) {
+    public Maintenance(RegularVendingMachine vendingMachine) {
         this.vendingMachine = vendingMachine;
     }
 
@@ -12,7 +12,7 @@ public class Maintenance {
         if (item != null) {
             int startingCount = vendingMachine.getStartingInventory().getOrDefault(item, 0);
             vendingMachine.getStartingInventory().put(item, startingCount + quantity);
-            System.out.println("Item restocked: " + item.getName());
+            System.out.println("Item restocked: " + item.getItemName());
             System.out.println("Quantity: " + quantity);
         } else {
             System.out.println("Invalid item slot.");
@@ -25,7 +25,7 @@ public class Maintenance {
         System.out.println("Price: " + price);
     }
 
-    public void collectPayment() {
+    public void collectPaymentMaintenance() {
         vendingMachine.collectPayment();
         System.out.println("Payment collected.");
     }
@@ -37,7 +37,7 @@ public class Maintenance {
 
     public void performMaintenance() {
         restockItems();
-        collectPayment();
+        collectPaymentMaintenance();
         replenishChange();
     }
 

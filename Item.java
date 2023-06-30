@@ -76,7 +76,7 @@ public class Item {
         }
     }
 
-    public double calculateTotalPrice(int quantity) {
+    public int calculateTotalPrice(int quantity) {
         return itemPrice * quantity;
     }
 }

@@ -23,21 +23,21 @@ public class SalesSummary {
         for (Map.Entry<Item, Integer> entry : startingInventory.entrySet()) {
             Item item = entry.getKey();
             int quantity = entry.getValue();
-            System.out.println(item.getName() + ": " + quantity);
+            System.out.println(item.getItemName() + ": " + quantity);
         }
 
         System.out.println("\nEnding Inventory:");
         for (Map.Entry<Item, Integer> entry : endingInventory.entrySet()) {
             Item item = entry.getKey();
             int quantity = entry.getValue();
-            System.out.println(item.getName() + ": " + quantity);
+            System.out.println(item.getItemName() + ": " + quantity);
         }
 
         System.out.println("\nSales:");
         for (Map.Entry<Item, Integer> entry : itemSales.entrySet()) {
             Item item = entry.getKey();
             int quantity = entry.getValue();
-            System.out.println(item.getName() + ": " + quantity);
+            System.out.println(item.getItemName() + ": " + quantity);
         }
 
         System.out.println("\nTotal Sales Amount: $" + totalSales);
