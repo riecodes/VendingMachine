@@ -1,9 +1,10 @@
 public class Item {
     private String itemName;
-    private int itemPrice;
+    private double itemPrice;
     private int itemCalories;
     private int itemQuantity;
     private boolean itemAvailability;
+    private int unitsSold;
 
     public Item() {
         this.itemName = "Empty";
@@ -25,7 +26,7 @@ public class Item {
         return itemName;
     }
 
-    public int getItemPrice() {
+    public double getItemPrice() {
         return itemPrice;
     }
 
@@ -45,7 +46,7 @@ public class Item {
         this.itemName = itemName;
     }
 
-    public void setItemPrice(int itemPrice) {
+    public void setItemPrice(double itemPrice) {
         this.itemPrice = itemPrice;
     }
 
@@ -76,7 +77,15 @@ public class Item {
         }
     }
 
-    public int calculateTotalPrice(int quantity) {
+    public double calculateTotalPrice(int quantity) {
         return itemPrice * quantity;
+    }
+
+    public int getUnitsSold() {
+        return unitsSold;
+    }
+
+    public void incrementUnitsSold() {
+        unitsSold++;
     }
 }

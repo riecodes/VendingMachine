@@ -14,30 +14,17 @@ public class SalesSummary {
         endingInventory = new HashMap<>();
     }
 
-    public void printSummary() {
+    public void printVenTransaction() {
         System.out.println("========================================");
-        System.out.println("Regular Vending Machine Sales Summary:");
+        System.out.println("Regular Vending Machine Transaction Summary:");
         System.out.println("========================================");
 
-        System.out.println("Starting Inventory:");
-        for (Map.Entry<Item, Integer> entry : startingInventory.entrySet()) {
-            Item item = entry.getKey();
-            int quantity = entry.getValue();
-            System.out.println(item.getItemName() + ": " + quantity);
-        }
-
-        System.out.println("\nEnding Inventory:");
-        for (Map.Entry<Item, Integer> entry : endingInventory.entrySet()) {
-            Item item = entry.getKey();
-            int quantity = entry.getValue();
-            System.out.println(item.getItemName() + ": " + quantity);
-        }
-
-        System.out.println("\nSales:");
+        System.out.println("Items Sold:");
         for (Map.Entry<Item, Integer> entry : itemSales.entrySet()) {
             Item item = entry.getKey();
             int quantity = entry.getValue();
-            System.out.println(item.getItemName() + ": " + quantity);
+            int unitsSold = item.getUnitsSold(); // Get the number of units sold for this item
+            System.out.println(item.getItemName() + ": " + quantity + " units sold (" + unitsSold + " total)");
         }
 
         System.out.println("\nTotal Sales Amount: $" + totalSales);

@@ -1,7 +1,11 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
+import java.util.Scanner;
 
 public class RegularVendingMachine {
+    private ArrayList<Slot> slots;
     private Map<String, Item> inventory;
     private Map<Item, Integer> startingInventory;
     private Map<Item, Integer> endingInventory;
@@ -9,6 +13,7 @@ public class RegularVendingMachine {
     private Map<String, Integer> changeValue;
 
     public RegularVendingMachine() {
+        this.slots = new ArrayList<>();
         inventory = new HashMap<>();
         startingInventory = new HashMap<>();
         endingInventory = new HashMap<>();
@@ -22,7 +27,7 @@ public class RegularVendingMachine {
         System.out.println("2. Purchase an item");
         System.out.println("3. Return to previous menu");
         System.out.print("Enter your choice: ");
-        int choice = readValiInteger(1, 3);
+        int choice = readValidChoice(1, 3);
 
         switch (choice) {
             case 1:
@@ -35,6 +40,7 @@ public class RegularVendingMachine {
                 return;
             default:
                 System.out.println("Invalid selection! Please try again.");
+                venMachineFeatures();
         }
     }
 
@@ -49,7 +55,7 @@ public class RegularVendingMachine {
     }
 
     private void purchaseItem() {
-        String slot = readString("Enter the slot of the item you want to purchase: ");
+        String slot = readValidString("Enter the slot of the item you want to purchase: ");
         double amount = readValidInteger(0, Integer.MAX_VALUE, "Enter the amount of money: ");
 
         Item item = getItem(slot);
@@ -58,6 +64,7 @@ public class RegularVendingMachine {
                 double change = amount - item.getItemPrice();
                 System.out.println("You purchased: " + item.getItemName());
                 System.out.println("Change: $" + change);
+                item.incrementUnitsSold(); // Increment units sold count
                 updateInventory(slot);
             } else {
                 System.out.println("Insufficient funds. Please insert more money.");
@@ -67,6 +74,7 @@ public class RegularVendingMachine {
         }
     }
 
+
     public void restockItem() {
         performMaintenance(); // Call the existing performMaintenance() method to restock items
         System.out.println("Items restocked.");
@@ -74,11 +82,14 @@ public class RegularVendingMachine {
 
     public void addVenItem() {
         System.out.println("Enter details for the new item:");
-        String itemName = readString("Name of item: ");
-        double price = readValidInteger(0, Integer.MAX_VALUE, "Enter a price for the item: ");
+        String itemName = readValidString("Name of item: ");
+        double price = readValidDouble(0, Integer.MAX_VALUE, "Enter a price for the item: ");
         int calories = readValidInteger(0, Integer.MAX_VALUE, "Enter no. of calories of the item: ");
 
-        Item item = new Item(itemName, price, calories);
+        Item item = new Item();        
+        item.setItemName(itemName);
+        item.setItemPrice(price);
+        item.setItemCalories(calories);
         addItem(generateNewItemSlot(), item);
 
         System.out.println("New item added:");
@@ -89,7 +100,7 @@ public class RegularVendingMachine {
 
     public void changeVenItem() {
         String itemSlot = readValidString("Enter the item slot: ");
-        double newPrice = readValidInteger(0, Integer.MAX_VALUE, "Enter the new price for the item: ");
+        double newPrice = readValidDouble(0, Integer.MAX_VALUE, "Enter the new price for the item: ");
         setPrice(itemSlot, newPrice);
         System.out.println("Item price changed successfully.");
     }
@@ -100,7 +111,7 @@ public class RegularVendingMachine {
     }
 
     public void addVenMoney() {
-        String denomination = readString("Enter the denomination of the coin/bill to replenish: ");
+        String denomination = readValidString("Enter the denomination of the coin/bill to replenish: ");
         insertCoin(denomination); // Assuming coins and bills have the same denomination values
         System.out.println("Denomination replenished.");
     }
@@ -110,14 +121,18 @@ public class RegularVendingMachine {
         for (Map.Entry<Item, Integer> entry : endingInventory.entrySet()) {
             Item item = entry.getKey();
             int count = entry.getValue();
-            System.out.println(item.getItemName() + " - " + count + " units sold");
+            int unitsSold = item.getUnitsSold(); // Get the units sold for the item
+            System.out.println(item.getItemName() + " - " + " units sold (Total: " + unitsSold + ")");
         }
     }
+
+
     public void addItem(String itemSlot, Item item) {
         inventory.put(itemSlot, item);
         startingInventory.put(item, 0);
         endingInventory.put(item, 0);
     }
+
 
     public void deleteItem(String itemSlot) {
         Item item = inventory.get(itemSlot);
@@ -177,7 +192,7 @@ public class RegularVendingMachine {
                     // Item available
                     startingInventory.put(item, startingCount - 1);
                     endingInventory.put(item, endingCount + 1);
-                    salesSum -= price;
+                    salesSum += price; // Update the sales count
                     dispenseItem(item);
                     giveChange(price);
                 } else {
@@ -258,5 +273,114 @@ public class RegularVendingMachine {
 
     public Map<Item, Integer> getEndingInventory() {
         return endingInventory;
+    }
+
+    private int readValidChoice(int min, int max) {
+        Scanner scanner = new Scanner(System.in);
+        int input;
+        while (true) {
+            try {
+                input = scanner.nextInt();
+                if (input >= min && input <= max) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from the scanner
+            }
+        }
+        return input;
+    }
+
+    private int readValidInteger(int min, int max, String message) {
+        Scanner scanner = new Scanner(System.in);
+        int input;
+        while (true) {
+            System.out.print(message);
+            try {
+                input = scanner.nextInt();
+                if (input >= min && input <= max) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from the scanner
+            }
+        }
+        return input;
+    }
+
+
+    private double readValidDouble(double min, double max, String message) {
+        Scanner scanner = new Scanner(System.in);
+        double input;
+        while (true) {
+            System.out.print(message);
+            try {
+                input = scanner.nextDouble();
+                if (input >= min && input <= max) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please try again.");
+                scanner.nextLine(); // Clear the invalid input from the scanner
+            }
+        }
+        return input;
+    }
+
+    private String readValidString(String message) {
+        Scanner scanner = new Scanner(System.in);
+        String input;
+        while (true) {
+            System.out.print(message);
+            input = scanner.nextLine();
+            if (!input.isEmpty()) {
+                break;
+            } else {
+                System.out.println("Invalid input. Please try again.");
+            }
+        }
+        return input;
+    }
+
+    public Map<String, Item> getInventory() {
+        return inventory;
+    }
+
+    public void updateInventory(String itemName) {
+        for (Slot slot : slots) {
+            ArrayList<Item> itemSlot = slot.getItemSlot();
+            for (Item item : itemSlot) {
+                if (item.getItemName().equals(itemName)) {
+                    item.setItemQuantity(item.getItemQuantity() + 1);
+                    System.out.println("Inventory updated for item: " + itemName);
+                    return;
+                }else {
+                    System.out.println("Item not found in inventory: " + itemName);
+                }
+            }
+        }
+        
+    }
+
+    private int lastSlotNumber = 0; // Add this instance variable
+
+    public String generateNewItemSlot() {
+        lastSlotNumber++; // Increment the last slot number
+        String newSlot = String.valueOf(lastSlotNumber); // Convert the slot number to a string
+        System.out.println("New item slot generated: " + newSlot);
+        return newSlot;
+    }
+
+
+    public void addSlot(Slot slot) {
+        slots.add(slot);
     }
 }

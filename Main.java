@@ -75,25 +75,36 @@ public class Main {
             }
         }
     }
-
+    private RegularVendingMachine currentVendingMachine;
+    
     public RegularVendingMachine createVM() {
         System.out.println("Choose your Vending Machine option:\n");
         System.out.println("[1] Regular Vending Machine");
         System.out.println("[2] Special Vending Machine");
+        System.out.println("[0] Back");
 
-        int choice = readInteger(1, 2);
+        int choice = readInteger(0, 2);
         RegularVendingMachine vendingMachine = null;
 
         switch (choice) {
+            case 0:
+                System.out.println("Returning to main menu.");
+                break;
             case 1:
                 vendingMachine = createRegVM();
                 break;
             case 2:
-                System.out.println("Oops! You're too excited, this feature isn't available yet.");
+                System.out.println("Service will open soon. Please check back later.");
                 break;
         }
-        return vendingMachine;
+
+        if (vendingMachine != null) {
+            currentVendingMachine = vendingMachine;
+        }
+
+        return currentVendingMachine;
     }
+
 
     public RegularVendingMachine createRegVM() {
         RegularVendingMachine vendingMachine = new RegularVendingMachine();
@@ -107,10 +118,14 @@ public class Main {
             System.out.println("Enter details for Item " + (i + 1) + ":");
             System.out.println("===================================");            
             String itemName = readString("Name of item: ");
-            double price = readValidInteger(0, Integer.MAX_VALUE, "Enter a price for the item: ");
+            double price = readValidDouble(0, Double.MAX_VALUE, "Enter a price for the item: ");
             int calories = readValidInteger(0, Integer.MAX_VALUE, "Enter no. of calories of the item: ");
 
+
             Item item = new Item();
+            item.setItemName(itemName);
+            item.setItemPrice(price);
+            item.setItemCalories(calories);
             vendingMachine.addItem(String.valueOf(i + 1), item);
 
             System.out.println("Item " + (i + 1) + ":");
@@ -154,6 +169,24 @@ public class Main {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
+            }
+        }
+        return value;
+    }
+
+    public double readValidDouble(double min, double max, String message) {
+        double value;
+        while (true) {
+            System.out.print(message);
+            try {
+                value = Double.parseDouble(scanner.nextLine());
+                if (value >= min && value <= max) {
+                    break;
+                } else {
+                    System.out.println("Invalid input. Please enter a number between " + min + " and " + max + ".");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
             }
         }
         return value;
