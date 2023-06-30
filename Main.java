@@ -109,11 +109,11 @@ public class Main {
     public RegularVendingMachine createRegVM() {
         RegularVendingMachine vendingMachine = new RegularVendingMachine();
 
-        int numSlots = readValidInteger(8, Integer.MAX_VALUE, "Enter no. of slot items (MIN: 8): ");
+        int numSlots = readValidInteger(1, 8, "Enter no. of slot items (MAX: 8): ");
+        int itemCount = readValidInteger(1, 10, "Enter no. of items (MAX: 10): ");
+        vendingMachine.setItemCount(itemCount);
 
-        int itemCount = readValidInteger(10, Integer.MAX_VALUE, "Enter no. of items (MIN: 10): ");
-
-        for (int i = 0; i < itemCount; i++) {
+        for (int i = 0; i < numSlots; i++) {
             System.out.println("===================================");
             System.out.println("Enter details for Item " + (i + 1) + ":");
             System.out.println("===================================");            

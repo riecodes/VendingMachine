@@ -85,18 +85,20 @@ public class RegularVendingMachine {
         String itemName = readValidString("Name of item: ");
         double price = readValidDouble(0, Integer.MAX_VALUE, "Enter a price for the item: ");
         int calories = readValidInteger(0, Integer.MAX_VALUE, "Enter no. of calories of the item: ");
+        String slot = readValidString("Enter the slot for the item: ");
 
         Item item = new Item();        
         item.setItemName(itemName);
         item.setItemPrice(price);
         item.setItemCalories(calories);
-        addItem(generateNewItemSlot(), item);
+        addItem(slot, item);
 
         System.out.println("New item added:");
         System.out.println("Name: " + item.getItemName());
         System.out.println("Price: " + item.getItemPrice());
         System.out.println("Calories: " + item.getItemCalories());
     }
+
 
     public void changeVenItem() {
         String itemSlot = readValidString("Enter the item slot: ");
@@ -117,14 +119,20 @@ public class RegularVendingMachine {
     }
 
     public void printVenTransaction() {
+        System.out.println("========================================");
+        System.out.println("Regular Vending Machine Transaction Summary:");
+        System.out.println("========================================");
+
+        System.out.println("Items Sold:");
         Map<Item, Integer> endingInventory = getEndingInventory();
         for (Map.Entry<Item, Integer> entry : endingInventory.entrySet()) {
             Item item = entry.getKey();
-            int count = entry.getValue();
-            int unitsSold = item.getUnitsSold(); // Get the units sold for the item
-            System.out.println(item.getItemName() + " - " + " units sold (Total: " + unitsSold + ")");
+            int quantity = entry.getValue();
+            int unitsSold = item.getUnitsSold(); // Get the number of units sold for this item
+            System.out.println(item.getItemName() + ": Quantity: " + itemCount + " units sold = (" + unitsSold + " total)");
         }
     }
+
 
 
     public void addItem(String itemSlot, Item item) {
@@ -382,5 +390,11 @@ public class RegularVendingMachine {
 
     public void addSlot(Slot slot) {
         slots.add(slot);
+    }
+
+    private int itemCount;
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
     }
 }
